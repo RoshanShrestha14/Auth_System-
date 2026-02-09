@@ -5,11 +5,12 @@ import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule } from '@nestjs/config';
+import { LoggerService } from './logger/logger.service';
 
 
 @Module({
   imports: [AuthModule, UserModule,ConfigModule.forRoot(),MongooseModule.forRoot(process.env.MONGO_URL as string)],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, LoggerService],
 })
 export class AppModule {}

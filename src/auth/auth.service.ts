@@ -7,13 +7,13 @@ import bcrypt from 'bcrypt';
 export class AuthService {
   constructor(private readonly userService: UserService) {}
   async register(registerDto: registerUserDto) {
-    console.log('registerDto is ', registerDto);
-
     const hash = await bcrypt.hash(registerDto.password, 10);
 
-    const user = await this.userService.createUser({...registerDto,password:hash});
+    const user = await this.userService.createUser({
+      ...registerDto,
+      password: hash,
+    });
 
-    console.log('user is ',user)
-
+    return user
   }
 }
