@@ -2,17 +2,12 @@ import {
   ConflictException,
   Injectable,
   InternalServerErrorException,
-  Logger,
-  NotFoundException,
-  UnauthorizedException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { registerUserDto } from 'src/auth/dto/register.User';
 import { User } from './schemas/user.schema';
 import { Model } from 'mongoose';
 import { AppLogger } from 'src/logger/logger.service';
-import { JwtService } from '@nestjs/jwt';
-import { loginUserDto } from 'src/auth/dto/login.User';
 
 @Injectable()
 export class UserService {
@@ -44,7 +39,10 @@ export class UserService {
       throw new InternalServerErrorException('Failed to create user');
     }
   }
- async findByEmail(email: string) {
+  async findByEmail(email: string) {
     return this.UserModel.findOne({ email }).exec();
+  }
+  async getUserById(id: string) {
+    return this.UserModel.findById(id).exec();
   }
 }

@@ -21,7 +21,7 @@ export class AuthService {
     const payload = { sub: user._id };
     const token = await this.jwtService.signAsync(payload);
 
-    return { token };
+    return { message: `User Created`, token: token };
   }
 
   async login(loginDto: loginUserDto) {
@@ -39,6 +39,6 @@ export class AuthService {
     const payload = { sub: user._id };
     const token = await this.jwtService.signAsync(payload);
 
-    return { token };
+    return { message: `User logged in`, token: token };
   }
 }
