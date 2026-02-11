@@ -1,4 +1,8 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  ConsoleLogger,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { UserService } from 'src/user/user.service';
 import { registerUserDto } from './dto/register.User';
 import * as bcrypt from 'bcrypt';
@@ -26,6 +30,7 @@ export class AuthService {
 
     return { accessToken, refreshToken };
   }
+
   async register(registerDto: registerUserDto) {
     const hashedPassword = await bcrypt.hash(registerDto.password, 10);
 
@@ -37,6 +42,14 @@ export class AuthService {
     const { accessToken, refreshToken } = await this.generateTokens(
       user._id.toString(),
     );
+
+    const refreshTokenHash = await bcrypt.hash(refreshToken, 10);
+    const updatedRegisterUser = await this.userService.updateRefreshtoken(
+      user._id.toString(),
+      refreshTokenHash,
+    );
+    console.log('updated register user is ,', updatedRegisterUser);
+
     return { accessToken, refreshToken };
   }
 
@@ -56,6 +69,13 @@ export class AuthService {
     const { accessToken, refreshToken } = await this.generateTokens(
       user._id.toString(),
     );
+    const refreshTokenHash = await bcrypt.hash(refreshToken, 10);
+    const updatedRegisterUser = await this.userService.updateRefreshtoken(
+      user._id.toString(),
+      refreshTokenHash,
+    );
+
+    console.log('updated register user is ', updatedRegisterUser);
     return { accessToken, refreshToken };
   }
 }

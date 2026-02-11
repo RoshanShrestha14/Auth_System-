@@ -45,4 +45,15 @@ export class UserService {
   async getUserById(id: string) {
     return this.UserModel.findById(id).exec();
   }
+  async updateRefreshtoken(userId: string, refreshToken: string) {
+    this.logger.log(
+      `hassed refresh toekn is ${refreshToken} and user id is ${userId}`,
+      'UserService',
+    );
+    return await this.UserModel.findByIdAndUpdate(
+      userId,
+      { refreshTokenHash: refreshToken },
+      { new: true },
+    );
+  }
 }
