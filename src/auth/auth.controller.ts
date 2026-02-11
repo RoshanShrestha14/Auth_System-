@@ -3,8 +3,10 @@ import {
   Controller,
   Get,
   Post,
+  Req,
   Request,
   Res,
+  UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
@@ -26,14 +28,14 @@ export class AuthController {
       await this.authService.register(registerDto);
     res.cookie('accessToken', accessToken, {
       httpOnly: true,
-      secure: true,
+      secure: false,
       sameSite: 'strict',
       maxAge: 15 * 60 * 1000, // 15 min
     });
 
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
-      secure: true,
+      secure: false,
       sameSite: 'strict',
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
@@ -55,14 +57,14 @@ export class AuthController {
 
     res.cookie('accessToken', accessToken, {
       httpOnly: true,
-      secure: true,
+      secure: false,
       sameSite: 'strict',
       maxAge: 15 * 60 * 1000, // 15 min
     });
 
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
-      secure: true,
+      secure: false,
       sameSite: 'strict',
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
@@ -78,5 +80,31 @@ export class AuthController {
   @Get('profile')
   async getProfile(@Request() req) {
     return req.user;
+  }
+
+  @Get('refresh')
+  async refresh(
+    @Req() req: express.Request,
+    @Res({ passthrough: true }) res: express.Response,
+  ) {
+    const oldRefreshToken = req.cookies?.refreshToken;
+    if (!oldRefreshToken) throw new UnauthorizedException();
+
+    const { accessToken, refreshToken } =
+      await this.authService.refreshToken(oldRefreshToken);
+
+    res.cookie('accessToken', accessToken, {
+      httpOnly: true,
+      secure: false,
+      sameSite: 'strict',
+    });
+
+    res.cookie('refreshToken', refreshToken, {
+      httpOnly: true,
+      secure: false,
+      sameSite: 'strict',
+    });
+
+    return { message: 'Tokens refreshed' };
   }
 }

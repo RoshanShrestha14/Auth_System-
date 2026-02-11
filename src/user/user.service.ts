@@ -2,6 +2,7 @@ import {
   ConflictException,
   Injectable,
   InternalServerErrorException,
+  NotFoundException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { registerUserDto } from 'src/auth/dto/register.User';
@@ -43,7 +44,12 @@ export class UserService {
     return this.UserModel.findOne({ email }).exec();
   }
   async getUserById(id: string) {
-    return this.UserModel.findById(id).exec();
+   const user = this.UserModel.findById(id).exec();
+      if (!user) {
+      throw new NotFoundException(`User with ID ${id} not found`);
+    }
+    return user;
+
   }
   async updateRefreshtoken(userId: string, refreshToken: string) {
     this.logger.log(
@@ -55,5 +61,9 @@ export class UserService {
       { refreshTokenHash: refreshToken },
       { new: true },
     );
+  }
+
+  async checkRefreshToken(){
+
   }
 }
